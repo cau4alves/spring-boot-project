@@ -2,6 +2,7 @@ package br.com.caua.spring_boot_project.service;
 
 import br.com.caua.spring_boot_project.database.model.ProdutoEntity;
 import br.com.caua.spring_boot_project.dto.ProdutoDto;
+import br.com.caua.spring_boot_project.exception.NotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -40,6 +41,15 @@ public class ProdutoService {
         return new ArrayList<>(PRODUTOS);
     }
 
+    public ProdutoEntity findOne(Integer id) throws NotFoundException {
+        ProdutoEntity produto = PRODUTOS.stream()
+                .filter(p -> p.getId().equals(id))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("Produto não encontrado"));
+
+        return produto;
+    }
+
     public ProdutoEntity createProduct(ProdutoDto produtoDto) {
         Integer integer = PRODUTOS.stream()
                 .mapToInt(ProdutoEntity::getId)
@@ -56,5 +66,22 @@ public class ProdutoService {
         PRODUTOS.add(novoProduto);
 
         return novoProduto;
+    }
+
+    public ProdutoEntity updateProduct(ProdutoDto produtoDto, Integer id) throws NotFoundException {
+        ProdutoEntity produto = PRODUTOS.stream()
+                .filter(p -> p.getId().equals(id))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("Produto não encontrado"));
+
+        produto.setName(produtoDto.getName());
+        produto.setPrice(produtoDto.getPrice());
+        produto.setQtd(produtoDto.getQtd());
+
+        return produto;
+    }
+
+    public void deleteProduct(Integer id) {
+        PRODUTOS.removeIf(p -> p.getId().equals(id));
     }
 }
