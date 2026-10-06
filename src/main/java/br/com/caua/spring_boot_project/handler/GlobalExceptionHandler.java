@@ -1,5 +1,6 @@
 package br.com.caua.spring_boot_project.handler;
 
+import br.com.caua.spring_boot_project.exception.BadRequestException;
 import br.com.caua.spring_boot_project.exception.ErrorResponse;
 import br.com.caua.spring_boot_project.exception.NotFoundException;
 import org.springframework.http.HttpStatus;
@@ -28,5 +29,15 @@ public class GlobalExceptionHandler {
                 .build();
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+    }
+
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<ErrorResponse> handleBadRequestException(BadRequestException x) {
+        ErrorResponse response = ErrorResponse.builder()
+                .message(x.getMessage())
+                .status(HttpStatus.BAD_REQUEST.value())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 }
